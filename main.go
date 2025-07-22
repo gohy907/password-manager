@@ -51,10 +51,17 @@ func notFoundHandler(w http.ResponseWriter, r *http.Request) {
 	http.NotFound(w, r)
 }
 
+func getForm(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	http.ServeFile(w, r, "form.html")
+}
+
 func main() {
 	router := httprouter.New()
 
+	router.GET("/form", handleLogger(getForm))
 	router.NotFound = http.HandlerFunc(handlerFuncLogger(notFoundHandler))
 	router.GET("/hello/:name", handleLogger(hello))
+
+	fmt.Println("Server is listening at :8080")
 	log.Fatal(http.ListenAndServe(":8080", router))
 }

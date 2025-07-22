@@ -8,20 +8,24 @@
 
 <body>
 
-<div class="form-container">
-    <h1>Авторизация</h1>
-    <form id="registerForm" action="/register" method="POST">
-        <label for="login">Логин:</label>
-        <input type="login" name="login" id="login" required>
+    <div class="form-container">
+        <h1>Авторизация</h1>
+        <form id="registerForm" action="/register" method="POST">
+            <label for="login">Логин:</label>
+            <input type="login" name="login" id="login" required>
 
-        <label for="password">Пароль:</label>
-        <input type="password" name="password" id="password" required>
-        
-        <button class="submit">Войти</button>
-    </form>
-</div>
+            <label for="password">Пароль:</label>
+            <input type="password" name="password" id="password" required>
 
-<script src="/static/script.js"></script>
+            <button class="submit">Войти</button>
+        </form>
+
+        <div class="no-account-question">
+            <a href="/register">Нет аккаунта?</a>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
 
 </body>
 </html>

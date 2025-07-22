@@ -50,8 +50,12 @@ func notFoundHandler(w http.ResponseWriter, r *http.Request) {
 	http.NotFound(w, r)
 }
 
-func getForm(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func getRegPage(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	http.ServeFile(w, r, "form.html")
+}
+
+func getAuthPage(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	http.ServeFile(w, r, "auth.html")
 }
 
 func registerHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
@@ -72,11 +76,23 @@ func registerHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params
 	w.Write([]byte("Registration success!"))
 }
 
+func authorize(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, "Form parse error", http.StatusBadRequest)
+		return
+	}
+
+	password := r.FormValue("password")
+
+	w.Write([]byte(password))
+}
+
 func main() {
 	router := httprouter.New()
 	router.ServeFiles("/static/*filepath", http.Dir("static"))
 
-	router.GET("/register", handleLogger(getForm))
+	router.GET("/auth", handleLogger(getAuthPage))
+	router.GET("/register", handleLogger(getRegPage))
 	router.NotFound = http.HandlerFunc(handlerFuncLogger(notFoundHandler))
 	router.GET("/hello/:name", handleLogger(hello))
 	router.POST("/register", handleLogger(registerHandler))

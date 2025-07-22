@@ -7,26 +7,27 @@
 </head>
 
 <body>
+    <div class="form-container">
+        <h1>Регистрация</h1>
+        <form id="registerForm" action="/register" method="POST">
+            <label for="login">Логин:</label>
+            <input type="login" name="login" id="login" required>
 
-<div class="form-container">
-    <h1>Регистрация</h1>
-    <form id="registerForm" action="/register" method="POST">
-        <label for="email">Email:</label>
-        <input type="email" name="email" id="email" required>
+            <label for="password">Пароль:</label>
+            <input type="password" name="password" id="password" required>
 
-        <label for="password">Пароль:</label>
-        <input type="password" name="password" id="password" required>
+            <label for="passwordConfirm">Повторите пароль:</label>
+            <input type="password" name="passwordConfirm" id="passwordConfirm" required>
 
-        <label for="passwordConfirm">Повторите пароль:</label>
-        <input type="password" name="passwordConfirm" id="passwordConfirm" required>
+            <span class="error" id="passwordError"></span>
 
-        <span class="error" id="passwordError"></span>
+            <button class="submit">Зарегистрироваться</button>
+        </form>
+        <div class="account-question">
+            <a href="/auth">Есть аккаунт?</a>
+        </div>
+    </div>
 
-        <button type="submit">Зарегистрироваться</button>
-    </form>
-</div>
-
-<script src="/static/script.js"></script>
-
+    <script src="/static/script.js"></script>
 </body>
 </html>

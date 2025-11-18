@@ -92,7 +92,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params
 	if !exists {
 		insertInDB(username, hash1, salt)
 		fmt.Println("Register: insertion succesful!")
-		w.WriteHeader(200)
+		w.WriteHeader(201)
 	} else {
 		fmt.Println("Register: there is already user with this username, aborting:", username)
 		w.WriteHeader(409)

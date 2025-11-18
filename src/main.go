@@ -1,6 +1,8 @@
 package main
 
 import (
+	"crypto/rand"
+	"crypto/sha256"
 	"database/sql"
 	"fmt"
 	"github.com/joho/godotenv"
@@ -90,6 +92,43 @@ func authorize(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	w.Write([]byte(password))
 }
 
+func generateSalt(length int) ([]byte, error) {
+	salt := make([]byte, length)
+	_, err := rand.Read(salt)
+	if err != nil {
+		return nil, err
+	}
+	return salt, nil
+}
+
+func hashPassword(password string, salt []byte) (hash [32]byte) {
+	data := append([]byte(password), salt...)
+	hash = sha256.Sum256(data)
+	return
+}
+
+func insertInDB(username string, password_hash [32]byte, salt []byte) {
+	result, err := db.Exec("INSERT INTO users (username, password_hash, salt) VALUES ($1, $2, $3)", username, password_hash[:], salt)
+	if err != nil {
+		log.Println(err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+
+	if err != nil {
+		log.Println(err)
+	}
+	log.Println("Rows affected:", rowsAffected)
+
+	lastInsertId, err := result.LastInsertId()
+
+	if err != nil {
+		log.Println(err)
+	}
+	log.Println("Last inserted id:", lastInsertId)
+
+}
+
 var db *sql.DB
 
 func main() {
@@ -113,6 +152,15 @@ func main() {
 	if err := db.Ping(); err != nil {
 		log.Fatal(err)
 	}
+
+	salt, _ := generateSalt(32)
+	insertInDB("aboba", hashPassword("aboba", salt), salt)
+	var name string
+	err = db.QueryRow("SELECT username FROM users WHERE id=$1", 1).Scan(&name)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("User name:", name)
 
 	log.Println("Database is ready to accept connections")
 	// Здесь дальше код запуска сервера и обработчиков

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"crypto/rand"
 	"crypto/sha256"
 	"database/sql"
@@ -78,7 +79,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params
 	hash1 := hashPassword(password1, salt)
 	hash2 := hashPassword(password2, salt)
 
-	if hash1 != hash2 {
+	if !bytes.Equal(hash1, hash2) {
 		fmt.Println("Register: passwords do not match")
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -106,9 +107,40 @@ func authorize(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		return
 	}
 
+	username := r.FormValue("login")
+
 	password := r.FormValue("password")
 
-	w.Write([]byte(password))
+	var userExists bool
+	err := db.QueryRow("SELECT EXISTS(SELECT 1 FROM users WHERE username = $1)", username).Scan(&userExists)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	if !userExists {
+		fmt.Println("Authorization: there is no user with such username:", username)
+		w.WriteHeader(400)
+		return
+	}
+	var correctHash []byte
+	err = db.QueryRow("SELECT password_hash FROM users WHERE username = $1", username).Scan(&correctHash)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	var salt []byte
+	err = db.QueryRow("SELECT salt FROM users WHERE username = $1", username).Scan(&salt)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	if bytes.Equal(hashPassword(password, salt), correctHash) {
+		fmt.Println("Authorization: success!")
+		w.WriteHeader(200)
+	} else {
+		fmt.Println("Authorization: passwords do not match, aborting")
+		w.WriteHeader(401)
+	}
 }
 
 func generateSalt(length int) ([]byte, error) {
@@ -120,13 +152,14 @@ func generateSalt(length int) ([]byte, error) {
 	return salt, nil
 }
 
-func hashPassword(password string, salt []byte) (hash [32]byte) {
+func hashPassword(password string, salt []byte) (hash []byte) {
 	data := append([]byte(password), salt...)
-	hash = sha256.Sum256(data)
+	hash1 := sha256.Sum256(data)
+	hash = hash1[:]
 	return
 }
 
-func insertInDB(username string, password_hash [32]byte, salt []byte) {
+func insertInDB(username string, password_hash []byte, salt []byte) {
 	result, err := db.Exec("INSERT INTO users (username, password_hash, salt) VALUES ($1, $2, $3)", username, password_hash[:], salt)
 	if err != nil {
 		log.Println(err)
@@ -151,7 +184,6 @@ func insertInDB(username string, password_hash [32]byte, salt []byte) {
 var db *sql.DB
 
 func main() {
-	// Загрузить .env (ошибка обработки роли не играет, можно логировать)
 	if err := godotenv.Load(); err != nil {
 		log.Println("Warning: .env file not set")
 	}
@@ -183,6 +215,7 @@ func main() {
 	router.NotFound = http.HandlerFunc(handlerFuncLogger(notFoundHandler))
 	router.GET("/hello/:name", handleLogger(hello))
 	router.POST("/register", handleLogger(registerHandler))
+	router.POST("/auth", handleLogger(authorize))
 
 	fmt.Println("Server is listening at :8080")
 	log.Fatal(http.ListenAndServe(":8080", router))

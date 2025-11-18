@@ -87,7 +87,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params
 	var exists bool
 	err := db.QueryRow("SELECT EXISTS(SELECT 1 FROM users WHERE username = $1)", username).Scan(&exists)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
 	if !exists {
 		insertInDB(username, hash1, salt)
@@ -95,7 +95,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params
 		w.WriteHeader(200)
 	} else {
 		fmt.Println("Register: there is already user with this username, aborting:", username)
-		w.WriteHeader(405)
+		w.WriteHeader(409)
 	}
 
 }

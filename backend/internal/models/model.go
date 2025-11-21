@@ -4,17 +4,14 @@ import "time"
 
 // User - пользователь
 type User struct {
-	ID           int64  `json:"id"                     db:"id"`
-	Username     string `json:"username"               db:"username"`
-	Email        string `json:"email"                  db:"email"`
-	PasswordHash string `json:"-"                      db:"password_hash"`
-	Bio          string `json:"bio"                    db:"bio"`
-	Avatar       []byte `json:"-"                      db:"avatar"`
-	AvatarURL    string `json:"avatar_url"             db:"avatar_url"`
-	// Загружаемые отношения
-	Friends     []User      `json:"friends,omitempty"`
-	FriendCount int         `json:"friend_count,omitempty"`
-	Communities []Community `json:"communities,omitempty"`
+	ID           int64  `json:"id"         db:"id"`
+	Username     string `json:"username"   db:"username"`
+	Email        string `json:"email"      db:"email"`
+	PasswordHash string `json:"-"          db:"password_hash"`
+	Salt         []byte `json:"-"          db:"salt"`
+	Bio          string `json:"bio"        db:"bio"`
+	Avatar       []byte `json:"-"          db:"avatar"`
+	AvatarURL    string `json:"avatar_url" db:"avatar_url"`
 }
 
 // Friendship - отношение дружбы
@@ -33,12 +30,8 @@ type Community struct {
 	IsPrivate   bool      `json:"is_private"  db:"is_private"`
 	CreatedBy   int64     `json:"created_by"  db:"created_by"`
 	CreatedAt   time.Time `json:"created_at"  db:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"  db:"updated_at"`
-
-	// Загружаемые отношения
-	Members     []int64 `json:"members,omitempty"`
-	MemberCount int     `json:"member_count,omitempty"`
-	Creator     *User   `json:"creator,omitempty"`
+	Admins      []int64   `json:"admins"`
+	Writers     []int64   `json:"writers"`
 }
 
 // CommunitySubscription - подписка на сообщество

@@ -56,7 +56,7 @@ export default function Register() {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Войти
+          Регистрация 
         </Typography>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
@@ -102,11 +102,11 @@ export default function Register() {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
-            Войти
+            Зарегистрироваться
           </Button>
-              <Link href="#" variant="body2">
-                {"Нет аккаунта?"}
-              </Link>
+        <Link href="/auth" variant="body2">
+          {"Уже есть аккаунт?"}
+        </Link>
         </Box>
       </Box>
     </Container>

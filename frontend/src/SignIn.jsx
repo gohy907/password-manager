@@ -105,9 +105,9 @@ export default function SignIn() {
           >
             Войти
           </Button>
-              <Link href="#" variant="body2">
-                {"Нет аккаунта?"}
-              </Link>
+        <Link href="/register" variant="body2">
+          {"Ещё нет аккаунта?"}
+        </Link>
         </Box>
       </Box>
     </Container>

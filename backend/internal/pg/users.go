@@ -1,31 +1,21 @@
 package pg
 
 import (
-  "log"
-  "database/sql"
+	"database/sql"
+	"fmt"
 )
 
 var DB *sql.DB
 
-func InsertInDB(username string, passwordHash []byte, salt []byte) {
-	result, err := DB.Exec("INSERT INTO users (username, password_hash, salt) VALUES ($1, $2, $3)", username, passwordHash[:], salt)
+func InsertInDB(username, email string, passwordHash, salt []byte) error {
+	_, err := DB.Exec(
+		"INSERT INTO users (username, email, password_hash, salt) VALUES ($1, $2, $3, $4)",
+		username, email, passwordHash, salt,
+	)
 	if err != nil {
-		log.Println(err)
+		return fmt.Errorf("failed to insert user into database: %w", err)
 	}
 
-	rowsAffected, err := result.RowsAffected()
-
-	if err != nil {
-		log.Println(err)
-	}
-	log.Println("Rows affected:", rowsAffected)
-
-	lastInsertID, err := result.LastInsertId()
-
-	if err != nil {
-		log.Println(err)
-	}
-	log.Println("Last inserted id:", lastInsertID)
-
+	return nil
 }
 

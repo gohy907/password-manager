@@ -35,6 +35,7 @@ CREATE TABLE posts (
     text TEXT, 
     pic BYTEA,
     pic_url VARCHAR(255)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Таблица подписчиков сообщества

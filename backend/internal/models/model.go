@@ -23,7 +23,6 @@ type Friendship struct {
 	UserID    int64     `json:"user_id" db:"user_id"`
 	FriendID  int64     `json:"friend_id" db:"friend_id"`
 	Status    string    `json:"status" db:"status"` // pending, accepted, blocked
-	CreatedAt time.Time `json:"created_at" db:"created_at"`
 }
 
 // Community - сообщество
@@ -38,9 +37,6 @@ type Community struct {
 
 	// Загружаемые отношения
 	Members     []int64 `json:"members,omitempty"`
-	Admins      []int64 `json:"admins,omitempty"`
-	Writers     []int64 `json:"writers,omitempty"`
-	Subscribers []int64 `json:"subscribers,omitempty"`
 	MemberCount int     `json:"member_count,omitempty"`
 	Creator     *User   `json:"creator,omitempty"`
 }
@@ -50,7 +46,6 @@ type CommunitySubscription struct {
 	ID           int64     `json:"id" db:"id"`
 	UserID       int64     `json:"user_id" db:"user_id"`
 	CommunityID  int64     `json:"community_id" db:"community_id"`
-	SubscribedAt time.Time `json:"subscribed_at" db:"subscribed_at"`
 }
 
 // Post - пост в сообществе
@@ -62,7 +57,6 @@ type Post struct {
 	CommunityID int64     `json:"community_id" db:"community_id"`
 	AuthorID    int64     `json:"author_id" db:"author_id"`
 	CreatedAt   time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at" db:"updated_at"`
 
 	// Загружаемые отношения
 	Author    *User      `json:"author,omitempty"`

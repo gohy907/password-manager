@@ -3,7 +3,8 @@ CREATE TABLE users (
     id BIGSERIAL PRIMARY KEY,
     username VARCHAR(255) UNIQUE NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
+    password_hash bytea NOT NULL,
+    salt bytea NOT NULL,
     bio TEXT,
     avatar BYTEA,
     avatar_url VARCHAR(255)
@@ -24,7 +25,7 @@ CREATE TABLE communities (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     description TEXT,
-    is_private BOOLEAN DEFAULT FALSE
+    is_private BOOLEAN DEFAULT FALSE,
     created_by BIGINT NOT NULL REFERENCES users(id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

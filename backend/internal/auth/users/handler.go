@@ -2,6 +2,7 @@ package users
 
 import (
 	"bytes"
+	"encoding/hex" // Import for debugging
 	"net/http"
 
 	"github.com/alexedwards/scs/v2"
@@ -103,10 +104,16 @@ func AuthorizeUser(c *gin.Context, sessionManager *scs.SessionManager) {
 		return
 	}
 
-	if bytes.Equal(
-		password.HashPassword(req.Password, userData.Salt),
-		userData.PasswordHash,
-	) {
+	// --- DEBUGGING LOGS ---
+	newlyComputedHash := password.HashPassword(req.Password, userData.Salt)
+	zap.S().Debugw("Password hash comparison",
+		"salt_from_db", hex.EncodeToString(userData.Salt),
+		"hash_from_db", hex.EncodeToString(userData.PasswordHash),
+		"hash_computed_now", hex.EncodeToString(newlyComputedHash),
+	)
+	// --- END DEBUGGING LOGS ---
+
+	if bytes.Equal(newlyComputedHash, userData.PasswordHash) {
 		err = sessionManager.RenewToken(c.Request.Context())
 		if err != nil {
 			zap.S().Errorw("Failed to renew session token", "error", err)
